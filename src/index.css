@@ -17,6 +17,15 @@ body {
   color: white;
 }
 
+.btn-primary {
+  background-color: #22668a;
+  border: none;
+}
+
+.btn-primary:hover {
+  background-color: #22668a;
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
