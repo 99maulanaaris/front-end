@@ -8,6 +8,10 @@ import axios from 'axios'
 
 import { API_URL } from '../Api/Api_Url'
 
+import { FontAwesomeIcon} from '@fortawesome/react-fontawesome'
+
+import { faCartPlus} from '@fortawesome/free-solid-svg-icons'
+
 export default class TotalBayar extends Component{
 
   
@@ -54,6 +58,7 @@ export default class TotalBayar extends Component{
             onClick={() => this.submitTotalBayar(totalHarga)}
             
             >
+              <FontAwesomeIcon icon={faCartPlus} className="mr-2" />
               <strong>BAYAR</strong>
             </Button>
 

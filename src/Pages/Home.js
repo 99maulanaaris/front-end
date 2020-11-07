@@ -3,6 +3,7 @@ import { Kategori, Hasil, Menu} from '../components'
 import axios from 'axios'
 import {API_URL} from '../Api/Api_Url'
 import swal from 'sweetalert';
+import {Row, Col} from 'react-bootstrap'
 
 class Home extends Component {
 
@@ -28,8 +29,18 @@ class Home extends Component {
     
     })
 
-  }
+  } 
+    ambilKeranjang = async () => {
 
+    let response = await axios.get(API_URL + 'keranjangs')
+
+    this.setState({
+
+      keranjangs: response.data
+
+    })
+
+  }
   gantiKategori = async ( value ) => {
 
     this.setState({
@@ -103,24 +114,7 @@ class Home extends Component {
     }
   }
 
-  ambilKeranjang = async () => {
-
-    let response = await axios.get(API_URL + 'keranjangs')
-
-    this.setState({
-
-      keranjangs: response.data
-
-    })
-
-  }
-
-  
-
-  
-
-
-  componentDidMount(e){
+  componentDidMount(){
 
     this.getMenu()
     this.ambilKeranjang()
@@ -135,13 +129,13 @@ class Home extends Component {
     const {menus,pilihKategori, keranjangs} = this.state
 
     return (
-      <div className="row mt-3">
+      <Row mt={3}>
         <Kategori gantiKategori={this.gantiKategori} kategori={pilihKategori} />
 
-        <div className="col">
+        <Col>
           <h4 className="text-center"><strong>Daftar Produk</strong></h4>
           <hr/>
-          <div className="row">
+          <Row>
 
             {
               menus.map((menu) => (
@@ -155,11 +149,11 @@ class Home extends Component {
               ))
             }
 
-          </div>
-        </div>
+          </Row>
+        </Col>
 
          <Hasil keranjangs ={keranjangs} {...this.props} />
-      </div>
+      </Row>
     );
   }
 }
