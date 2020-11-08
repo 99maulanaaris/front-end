@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
-import { ListGroup,Col,Row , Badge} from 'react-bootstrap';
+import { ListGroup,Col,Row , Badge, Card} from 'react-bootstrap';
 import { numberFormat } from '../Api/NumberFormat';
+import { API_URL } from '../Api/Api_Url';
+import  swal from 'sweetalert';
+import axios from 'axios';
 import TotalBayar from './TotalBayar';
 import ModalKeranjang from './ModalKeranjang'
 
@@ -19,6 +22,8 @@ class Hasil extends Component {
       jumlah: 0,
 
       keterangan: '',
+
+      totalHarga: 0,
 
     }
 
@@ -42,7 +47,9 @@ class Hasil extends Component {
 
       jumlah:keranjang.jumlah,
 
-      keterangan:keranjang.keterangan
+      keterangan:keranjang.keterangan,
+
+      totalHarga: keranjang.total_harga
     })
 
   }
@@ -52,8 +59,8 @@ class Hasil extends Component {
     
     this.setState({
 
-      jumlah:this.state.jumlah+1
-
+      jumlah:this.state.jumlah+1,
+      totalHarga: this.state.keranjangDetail.product.harga * (this.state.jumlah + 1)
     })
 
   }
@@ -64,8 +71,9 @@ class Hasil extends Component {
       
       this.setState({
 
-      jumlah:this.state.jumlah - 1
-
+      jumlah:this.state.jumlah - 1,
+      
+      totalHarga: this.state.keranjangDetail.product.harga * (this.state.jumlah - 1),
       })
 
     }
@@ -81,11 +89,63 @@ class Hasil extends Component {
     })
   }
 
-  handleSubmit = (e) => {
+  handleSubmit = async (e) => {
 
     e.preventDefault()
+
+    this.handleClose()
+
     
-    console.log('Ok');
+    const data = {
+      jumlah: this.state.jumlah,
+      total_harga: this.state.totalHarga,
+      product:this.state.keranjangDetail.product,
+      keterangan:this.state.keterangan
+    }
+
+   
+    await axios.put(API_URL + `keranjangs/${this.state.keranjangDetail.id}`,data)
+
+    await this.props.getKeranjang()
+
+    swal({
+
+      title: 'SUKSES',
+      text: `Berhasil Update Pesanan , ${data.product.nama}`,
+      icon: 'success',
+      button: false,
+      timer: 1500
+    
+    })
+
+
+  }
+
+  hapusPesan = async (id) => {
+
+    this.handleClose()
+
+    await axios.delete(API_URL + `keranjangs/${id}`)
+
+    await this.props.getKeranjang()
+
+    swal({
+
+      title: 'SUKSES',
+      text: `Pesanan BERHASIL Di Hapus , ${this.state.keranjangDetail.product.nama}`,
+      icon: 'error',
+      button: false,
+      timer: 1500
+    
+    })
+
+
+  }
+
+  componentDidMount(){
+
+    this.props.getKeranjang()
+    
   }
 
 
@@ -101,32 +161,32 @@ class Hasil extends Component {
           <strong>Hasil</strong>
         </h4>
         <hr/>
-
-          <ListGroup>
+         <Card className="overflow-auto hasil">
+             <ListGroup>
 
             {
               keranjangs.map( (keranjang) => (
+                  <ListGroup.Item key={keranjang.id} onClick={() => this.handleShow(keranjang)}>
 
-                <ListGroup.Item key={keranjang.id} onClick={() => this.handleShow(keranjang)}>
+                  <Row>
+                    <Col xs={2}>
+                      <h4>
+                        <Badge pill variant="success">
+                          {keranjang.jumlah}
+                        </Badge>
+                      </h4>
+                    </Col>
+                    <Col>
+                      <h5>{keranjang.product.nama}</h5>
+                      Rp. {numberFormat(keranjang.product.harga)}
+                    </Col>
+                    <Col>
+                      <strong>Rp. {numberFormat(keranjang.total_harga)}</strong>
+                    </Col>
+                  </Row>
 
-                 <Row>
-                   <Col xs={2}>
-                     <h4>
-                       <Badge pill variant="success">
-                         {keranjang.jumlah}
-                       </Badge>
-                     </h4>
-                   </Col>
-                   <Col>
-                     <h5>{keranjang.product.nama}</h5>
-                     Rp. {numberFormat(keranjang.product.harga)}
-                   </Col>
-                   <Col>
-                     <strong>Rp. {numberFormat(keranjang.total_harga)}</strong>
-                   </Col>
-                 </Row>
-
-                </ListGroup.Item>
+                  </ListGroup.Item>
+                
 
               ))
               
@@ -138,6 +198,7 @@ class Hasil extends Component {
               kurang={this.kurang} 
               handleSubmit={this.handleSubmit}
               changeHandler={this.changeHandler}
+              hapus={this.hapusPesan}
                
                />
             
@@ -145,8 +206,8 @@ class Hasil extends Component {
               
           </ListGroup>
         
-        
-        
+         </Card>
+
         <TotalBayar keranjangs={keranjangs} {...this.props} />
 
       </Col>

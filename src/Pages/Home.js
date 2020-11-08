@@ -135,7 +135,7 @@ class Home extends Component {
         <Col>
           <h4 className="text-center"><strong>Daftar Produk</strong></h4>
           <hr/>
-          <Row>
+          <Row className="overflow-auto menu">
 
             {
               menus.map((menu) => (
@@ -152,7 +152,7 @@ class Home extends Component {
           </Row>
         </Col>
 
-         <Hasil keranjangs ={keranjangs} {...this.props} />
+         <Hasil keranjangs ={keranjangs} {...this.props} getKeranjang={this.ambilKeranjang} />
       </Row>
     );
   }
